@@ -3,8 +3,7 @@ from bs4 import BeautifulSoup
 
 SITE = "https://books.toscrape.com/"
 
-def get_html(uri) :
-    url = SITE + uri
+def get_html(url) :
     response = requests.get(url)
 
     if response.status_code == 200 :
