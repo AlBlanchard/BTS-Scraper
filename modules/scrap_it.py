@@ -1,12 +1,26 @@
 from modules.get_it import SITE
 from urllib.parse import urljoin
 from modules.get_it import get_html
+from modules.get_it import HOME_SOUP
 
-def scrap_product_url(soup, actual_page_url, all_products_url_list) :
+
+def scrap_category() :
+
+    all_category_dictionnary = {}
+    all_category_anchor = HOME_SOUP.find(class_="nav-list").find("ul").find_all("a")
+
+    for category_anchor in all_category_anchor :
+        all_category_dictionnary[category_anchor.text.strip()] = category_anchor["href"] #strip() nettoie le texte
+
+    return all_category_dictionnary 
+
+all_category_dictionnary = scrap_category()
+
+def scrap_product_url(soup, actual_page_url) :
     
-    all_products_h3 = soup.find_all("h3")
+    all_products_url_list = []
 
-    print(actual_page_url)
+    all_products_h3 = soup.find_all("h3")
 
     for product in all_products_h3 : # va chercher toutes les uri vers les produits
         product_link = product.find("a")
@@ -25,14 +39,14 @@ def scrap_product_url(soup, actual_page_url, all_products_url_list) :
         next_page_uri = next_page_anchor["href"]
         next_page_url = urljoin(actual_page_url, next_page_uri)
 
-        print(next_page_url)
-
         next_page_soup = get_html(next_page_url)
-        scrap_product_url(next_page_soup, next_page_url, all_products_url_list)
+        all_products_url_list = all_products_url_list + scrap_product_url(next_page_soup, next_page_url)
 
         return all_products_url_list
     
     return all_products_url_list
+
+
 
     
 

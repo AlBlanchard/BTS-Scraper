@@ -1,16 +1,32 @@
 from modules.get_it import get_html
 from modules.scrap_it import scrap_product_url
+from modules.scrap_it import all_category_dictionnary 
 from urllib.parse import urljoin
 from modules.get_it import SITE
+import sys
 
-all_products_url_list = []
+def is_a_category(string, dictionnary) :
+    return string in dictionnary
 
-page_category_uri = "catalogue/category/books/travel_2/index.html"
+if len(sys.argv) != 2:
+    print("Erreur : Vous devez fournir exactement un argument.")
+    sys.exit(1)
 
-url_to_scrap = urljoin(SITE, page_category_uri)
+if is_a_category(sys.argv[1], all_category_dictionnary) :
+    
+    print("Scrap en cours...")
 
-home_soup = get_html(url_to_scrap)
+    url_to_scrap = urljoin(SITE, all_category_dictionnary[sys.argv[1]])
+    page_soup = get_html(url_to_scrap)
+    all_products_url_list = scrap_product_url(page_soup, url_to_scrap)
 
-scrap_product_url(home_soup, url_to_scrap, all_products_url_list)
+    print(all_products_url_list)
 
-print(all_products_url_list)
+    exit()
+
+else :
+    print("Argument invalide")
+    exit()
+
+
+
