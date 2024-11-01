@@ -3,7 +3,6 @@ from urllib.parse import urljoin
 from modules.get_it import get_html
 from modules.get_it import HOME_SOUP
 
-
 def scrap_category() :
 
     all_category_dictionnary = {}
@@ -16,7 +15,8 @@ def scrap_category() :
 
 all_category_dictionnary = scrap_category()
 
-def scrap_product_url(soup, actual_page_url) :
+def scrap_product_url(page_url) :
+    soup = get_html(page_url)
     
     products_dictionnary = {}
 
@@ -26,7 +26,7 @@ def scrap_product_url(soup, actual_page_url) :
         product_anchor = product.find("a")
 
         product_title = product_anchor["title"]   
-        product_url = urljoin(actual_page_url, product_anchor["href"]) #urljoin, fonction de base dans python, merveilleux pour contrer les url relatives .../.../...
+        product_url = urljoin(page_url, product_anchor["href"]) #urljoin, fonction de base dans python, merveilleux pour contrer les url relatives .../.../...
 
         products_dictionnary[product_title] = product_url
 
@@ -37,10 +37,9 @@ def scrap_product_url(soup, actual_page_url) :
     if there_is_an_other_page :
         next_page_anchor = soup.find(class_="next").find("a")
         next_page_uri = next_page_anchor["href"]
-        next_page_url = urljoin(actual_page_url, next_page_uri)
+        next_page_url = urljoin(page_url, next_page_uri)
 
-        next_page_soup = get_html(next_page_url)
-        products_dictionnary.update(scrap_product_url(next_page_soup, next_page_url))
+        products_dictionnary.update(scrap_product_url(next_page_url))
 
         return products_dictionnary
     
