@@ -5,14 +5,12 @@ from urllib.parse import urljoin
 from modules.get_it import SITE
 import sys
 
-def is_a_category(string, dictionnary) :
-    return string in dictionnary
 
 if len(sys.argv) != 2:
     print("Erreur : Vous devez fournir exactement un argument.")
     sys.exit(1)
 
-if is_a_category(sys.argv[1], all_category_dictionnary) :
+if sys.argv[1] in all_category_dictionnary :
     
     print("Scrap en cours...")
 
