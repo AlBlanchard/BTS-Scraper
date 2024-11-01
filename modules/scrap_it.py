@@ -18,17 +18,17 @@ all_category_dictionnary = scrap_category()
 
 def scrap_product_url(soup, actual_page_url) :
     
-    all_products_url_list = []
+    products_dictionnary = {}
 
     all_products_h3 = soup.find_all("h3")
 
     for product in all_products_h3 : # va chercher toutes les uri vers les produits
-        product_link = product.find("a")
+        product_anchor = product.find("a")
 
-        if product_link and "href" in product_link.attrs : # change les uri en url exploitables pour les requêtes get
-            
-            product_url = urljoin(actual_page_url, product_link["href"]) #urljoin, fonction de base dans python, merveilleux pour contrer les url relatives .../.../...
-            all_products_url_list.append(product_url)
+        product_title = product_anchor["title"]   
+        product_url = urljoin(actual_page_url, product_anchor["href"]) #urljoin, fonction de base dans python, merveilleux pour contrer les url relatives .../.../...
+
+        products_dictionnary[product_title] = product_url
 
     # L'idée est de vérifier s'il existe une autre page dans cette catégorie, si c'est le cas, refaire le processus
 
@@ -40,11 +40,11 @@ def scrap_product_url(soup, actual_page_url) :
         next_page_url = urljoin(actual_page_url, next_page_uri)
 
         next_page_soup = get_html(next_page_url)
-        all_products_url_list = all_products_url_list + scrap_product_url(next_page_soup, next_page_url)
+        products_dictionnary.update(scrap_product_url(next_page_soup, next_page_url))
 
-        return all_products_url_list
+        return products_dictionnary
     
-    return all_products_url_list
+    return products_dictionnary
 
 
 

@@ -16,9 +16,9 @@ if sys.argv[1] in all_category_dictionnary :
 
     url_to_scrap = urljoin(SITE, all_category_dictionnary[sys.argv[1]])
     page_soup = get_html(url_to_scrap)
-    all_products_url_list = scrap_product_url(page_soup, url_to_scrap)
+    products_dictionnary = scrap_product_url(page_soup, url_to_scrap)
 
-    print(all_products_url_list)
+    print(products_dictionnary)
 
     exit()
 
