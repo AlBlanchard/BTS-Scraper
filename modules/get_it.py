@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 
 def get_html(url) :
     response = requests.get(url)
+    response.encoding = "utf-8"
 
     if response.status_code == 200 :
         html_content = response.text

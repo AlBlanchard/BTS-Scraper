@@ -5,7 +5,12 @@ from urllib.parse import urljoin
 from modules.get_it import SITE
 from modules.argv_check import argv_lenght_filter
 from modules.argv_check import argv_check
+from modules.scrap_it import search_book_name
 import sys
+from modules.scrap_it import scrap_book_data
+
+print(scrap_book_data("https://books.toscrape.com/catalogue/sharp-objects_997/index.html"))
+exit()
 
 argv_lenght_filter(sys.argv)
 argv_check(sys.argv)

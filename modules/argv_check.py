@@ -3,6 +3,7 @@ from modules.scrap_it import scrap_product_url
 from modules.get_it import SITE
 from modules.scrap_it import all_category_dictionnary 
 from urllib.parse import urljoin
+from modules.scrap_it import search_book_name
 
 def argv_lenght_filter(argv_list) :
         match len(argv_list) :
@@ -48,7 +49,7 @@ def argv_check(argv_list) :
                 exit()
 
         case "book" :
-            print("Scrap en cours du livre...")
+            search_book_name(sys.argv[2], SITE)
             exit()
 
         case "infos" :
