@@ -13,7 +13,8 @@ def get_html(url) :
         return soup
     
     else :
-        print("Erreur : ", response.status_code, " aie aie aie")
+        print("Get Error : ", response.status_code, " aie aie aie")
+        exit()
 
 
 SITE = "https://books.toscrape.com/"
