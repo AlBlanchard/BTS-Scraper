@@ -9,8 +9,8 @@ from modules.scrap_it import search_book_name
 import sys
 from modules.scrap_it import scrap_book_data
 
-# scrap_book_data("https://books.toscrape.com/catalogue/the-bridge-to-consciousness-im-writing-the-bridge-between-science-and-our-old-and-new-beliefs_840/index.html")
-# exit()
+scrap_book_data("https://books.toscrape.com/catalogue/the-bridge-to-consciousness-im-writing-the-bridge-between-science-and-our-old-and-new-beliefs_840/index.html")
+exit()
 
 if not entry_correct(sys.argv) :
     exit()

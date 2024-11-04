@@ -88,8 +88,8 @@ def scrap_book_data(page_url):
     soup = get_html(page_url)
 
     # Cette fonction permet de simplifier l'extraction de données et de rendre stable le script : il ne plantera pas si une donnée n'existe pas ou si la structure du site n'a pas été respecté, il renverra une valeur par défault. 
-    def get_data_or_default(tag_name, text=None, attribute="text", default="Non renseigné(e)"):
-        element = soup.find(tag_name, text=text) if text else soup.find(tag_name)
+    def get_data_or_default(tag_name, text=None, attribute="text", id=None, default="Non renseigné(e)"):
+        element = soup.find(tag_name, text=text, id=id) if text or id else soup.find(tag_name)
         if element:
             if attribute == "text":
                 return element.find_next_sibling("td").text.strip() if tag_name == "th" else element.text.strip()
@@ -122,7 +122,7 @@ def scrap_book_data(page_url):
     review_rating = rating_map.get(review_rating_in_letter, "Non renseigné(e)")
 
     # URL de l'image
-    image_url = urljoin(page_url, get_text_or_default("img", attribute="src"))
+    image_url = urljoin(page_url, get_data_or_default("img", attribute="src"))
 
     # Maintenant que toutes les données ont été récoltés, les mettre en place dans l'objet
     book_data = Book(
