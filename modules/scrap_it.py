@@ -86,73 +86,59 @@ def search_book_name(book_name, url) :
 
 def scrap_book_data(page_url):
     soup = get_html(page_url)
-    books_dictionnary = {}
 
-    # Et on récolte toutes les données
-    product_page_url = page_url 
+    # Cette fonction permet de simplifier l'extraction de données et de rendre stable le script : il ne plantera pas si une donnée n'existe pas ou si la structure du site n'a pas été respecté, il renverra une valeur par défault. 
+    def get_data_or_default(tag_name, text=None, attribute="text", default="Non renseigné(e)"):
+        element = soup.find(tag_name, text=text) if text else soup.find(tag_name)
+        if element:
+            if attribute == "text":
+                return element.find_next_sibling("td").text.strip() if tag_name == "th" else element.text.strip()
+            else:
+                return element[attribute]
+        return default
 
-    upc = soup.find("th", text="UPC").find_next_sibling("td").text.strip()
+    # Et hop on récupère les données
+    product_page_url = page_url
+    upc = get_data_or_default("th", "UPC")
+    title = get_data_or_default("h1")
+    price_including_tax = get_data_or_default("th", "Price (incl. tax)")
+    price_excluding_tax = get_data_or_default("th", "Price (excl. tax)")
 
-    title = soup.find("h1").text.strip()
+    # Stock avec extraction du nombre grâce à mon merveilleux ami Regex
+    stock_text = get_data_or_default("th", "Availability")
+    regex_match = re.search(r'\((\d+)', stock_text)
+    number_available = regex_match.group(1) if regex_match else "Non renseigné(e)"
 
-    price_including_tax = soup.find("th", text="Price (incl. tax)").find_next_sibling("td").text.strip()
+    # Description
+    product_description = get_data_or_default("div", id="product_description")
 
-    price_excluding_tax = soup.find("th", text="Price (excl. tax)").find_next_sibling("td").text.strip()
-
-    stock_text = soup.find("th", text="Availability").find_next_sibling("td").text.strip()
-
-    regex_match = re.search(r'\((\d+)', stock_text) #Regex pour sortir le nombre en stock
-    if regex_match:
-        number_available = regex_match.group(1)
-    else:
-        print(f"Stock Error : {page_url}")
-        exit()
-
-    there_is_a_description = bool(soup.find("div", id="product_description"))
-    if there_is_a_description :
-        product_description = soup.find("div", id="product_description").find_next("p").text.strip()
-    else :
-        product_description = "Pas de description."
-
+    # Catégorie
     path_links = soup.find(class_="breadcrumb").find_all("a")
+    category = path_links[2].text.strip() if len(path_links) > 2 else "Non renseigné(e)"
 
-    category = path_links[2].text.strip()
-
+    # Rating avec conversion en chiffre
     review_rating_in_letter = soup.find("p", class_="star-rating")["class"][1]
-    match review_rating_in_letter :
-        case "One" :
-            review_rating = 1
-        case "Two" :
-            review_rating = 2
-        case "Three" :
-            review_rating = 3
-        case "Four" :
-            review_rating = 4
-        case "Five" :
-            review_rating = 5
-        case _ :
-            print(f"Rating Error : {page_url}")
-            exit()
+    rating_map = {"One": 1, "Two": 2, "Three": 3, "Four": 4, "Five": 5}
+    review_rating = rating_map.get(review_rating_in_letter, "Non renseigné(e)")
 
-    image_url = urljoin(page_url, soup.find("img")["src"])
+    # URL de l'image
+    image_url = urljoin(page_url, get_text_or_default("img", attribute="src"))
 
-    # Maintenant que toutes les données ont été récoltés, les mettre en place 
+    # Maintenant que toutes les données ont été récoltés, les mettre en place dans l'objet
     book_data = Book(
-        product_page_url=product_page_url,
-        upc=upc,
-        title=title,
-        price_including_tax=price_including_tax,
-        price_excluding_tax=price_excluding_tax,
-        number_available=number_available,
-        product_description=product_description,
-        category=category,
-        review_rating=review_rating,
-        image_url=image_url
+        product_page_url = product_page_url,
+        upc = upc,
+        title = title,
+        price_including_tax = price_including_tax,
+        price_excluding_tax = price_excluding_tax,
+        number_available = number_available,
+        product_description = product_description,
+        category = category,
+        review_rating = review_rating,
+        image_url = image_url
     )
 
-    books_dictionnary[f"book_{upc}"] = book_data
-
-    return books_dictionnary
+    return {f"book_{upc}": book_data}
 
 
     
