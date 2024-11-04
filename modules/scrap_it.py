@@ -11,7 +11,7 @@ def scrap_category() :
     all_category_anchor = HOME_SOUP.find(class_="nav-list").find("ul").find_all("a")
 
     for category_anchor in all_category_anchor :
-        all_category_dictionnary[category_anchor.text.strip()] = category_anchor["href"] #strip() nettoie le texte
+        all_category_dictionnary[category_anchor.text.strip()] = urljoin(SITE, category_anchor["href"])
 
     return all_category_dictionnary 
 
@@ -141,5 +141,16 @@ def scrap_book_data(page_url):
     return {f"book_{upc}": book_data}
 
 
-    
+def books_url_dictionnary_scraping(books_url_dictionnary) :
+        books_dictionnary = {}
+        
+        book_numb = 1
+        total_of_books_to_scrap = len(books_url_dictionnary)
+
+        for book_url in books_url_dictionnary.values() :
+            print(f"Scrap book {book_numb} of {total_of_books_to_scrap}")
+            books_dictionnary.update(scrap_book_data(book_url))
+            book_numb += 1
+
+        return books_dictionnary 
 

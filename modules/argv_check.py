@@ -6,30 +6,27 @@ from urllib.parse import urljoin
 from modules.scrap_it import search_book_name
 
 # Permet de vérifier si l'utilisateur a rentrer un nombre d'argument possible pour executer le script. Renvois le nombre d'arguments pour que le main sache quoi faire. 
-def entry_correct(argv_list) :
-        match len(argv_list) :
-            case 1 :
-                return True
-            
-            case 2 :
-                if argv_list[1] not in ["category", "book", "infos"] :
-                    print(f"L'argument {argv_list[1]} est invalide ET il manque un argument. Rapprochez vous de la documentation.")
-                    return False
-                else :
-                    print("Il manque un argument, veuillez vous repporter à la documentation.")
-                    return False
+def validate_script_arguments(argv_list):
+    valid_arguments = ["category", "book", "infos"]
+    
+    if len(argv_list) == 1:
+        return True
 
-            case 3 :
-                if argv_list[1] not in ["category", "book", "infos"] :
-                    print(f"L'argument {argv_list[1]} est invalide. Rapprochez vous de la documentation. 2")
-                    return False
-                    
-                else :
-                    return True
+    if len(argv_list) > 3:
+        print("Erreur : Trop d'arguments. Une belle documentation est là pour vous.")
+        return False
 
-            case _ :
-                print("Erreur : Trop d'arguments. Une belle documentation est là pour vous.")
-                return False
+    if argv_list[1] not in valid_arguments:
+        print(f"L'argument {argv_list[1]} est invalide.")
+        if len(argv_list) == 2:
+            print("ET il manque un argument. Rapprochez-vous de la documentation.")
+        return False
+
+    if len(argv_list) == 2:
+        print("Il manque un argument, veuillez vous reporter à la documentation.")
+        return False
+
+    return True
 
 
 def argv_check(argv_list) :
