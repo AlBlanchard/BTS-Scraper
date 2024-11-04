@@ -51,7 +51,7 @@ def scrap_product_url(page_url) :
     return products_dictionnary 
 
 
-def search_book_name(book_name, url) :
+def search_book_name_and_url(book_name, url=SITE) :
     while url :
         soup = get_html(url)
 
@@ -70,8 +70,8 @@ def search_book_name(book_name, url) :
             if book_name.lower() in title.lower() : #Pour que la comparaison soit insensible à la casse
                 print(f"Trouvé : {title}")
                 book_url = urljoin(SITE, h3.find("a")["href"])
-                print(book_url)
-                return True
+                
+                return book_url
             
         there_is_an_other_page = bool(soup.find(class_="next"))
         
@@ -82,7 +82,7 @@ def search_book_name(book_name, url) :
 
         else :
             print("Pas trouvé, assurez vous que le titre soit correct.")
-            return False
+            exit()
 
 def scrap_book_data(page_url):
     soup = get_html(page_url)

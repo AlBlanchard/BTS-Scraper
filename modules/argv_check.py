@@ -3,7 +3,7 @@ from modules.scrap_it import scrap_product_url
 from modules.get_it import SITE
 from modules.scrap_it import all_category_dictionnary 
 from urllib.parse import urljoin
-from modules.scrap_it import search_book_name
+from modules.scrap_it import search_book_name_and_url
 
 # Permet de vérifier si l'utilisateur a rentrer un nombre d'argument possible pour executer le script. Renvois le nombre d'arguments pour que le main sache quoi faire. 
 def validate_script_arguments(argv_list):
@@ -46,7 +46,7 @@ def argv_check(argv_list) :
                 exit()
 
         case "book" :
-            search_book_name(sys.argv[2], SITE)
+            search_book_name_and_url(sys.argv[2])
             exit()
 
         case "infos" :
