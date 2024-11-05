@@ -1,4 +1,6 @@
 /env
 /modules/__pycache__
 
+/datas_scraped
+
 books_data.csv

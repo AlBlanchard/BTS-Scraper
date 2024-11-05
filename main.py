@@ -8,6 +8,7 @@ from modules.scrap_it import scrap_book_data
 from modules.scrap_it import scrap_category
 from modules.scrap_it import search_book_name_and_url
 from modules.save_it import save_books_to_csv
+from modules.save_it import save_it
 
 #scrap_book_data("https://books.toscrape.com/catalogue/the-bridge-to-consciousness-im-writing-the-bridge-between-science-and-our-old-and-new-beliefs_840/index.html")
 #exit()
@@ -27,7 +28,7 @@ elif sys.argv[1] == "category" :
         books_url_dictionnary = scrap_product_url(all_category_dictionnary[argv_category])
         books_dictionnary = books_url_dictionnary_scraping(books_url_dictionnary)
         
-        save_books_to_csv(books_dictionnary)
+        save_it(books_dictionnary)
 
     else :
         print(f"La catégorie {argv_category} n'existe pas. Pour avoir une liste des catégories : infos category")
@@ -38,7 +39,7 @@ elif sys.argv[1] == "book" :
     book_url = search_book_name_and_url(argv_book_name)
     book_data = scrap_book_data(book_url)
 
-    save_books_to_csv(book_data)
+    save_it(book_data)
 
 else :
     exit()

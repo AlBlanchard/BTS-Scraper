@@ -84,33 +84,45 @@ def search_book_name_and_url(book_name, url=SITE) :
             print("Pas trouvé, assurez vous que le titre soit correct.")
             exit()
 
-def scrap_book_data(page_url):
+def scrap_book_data(page_url) :
     soup = get_html(page_url)
 
     # Cette fonction permet de simplifier l'extraction de données et de rendre stable le script : il ne plantera pas si une donnée n'existe pas ou si la structure du site n'a pas été respecté, il renverra une valeur par défault. 
-    def get_data_or_default(tag_name, text=None, attribute="text", id=None, default="Non renseigné(e)"):
+    def get_data_or_default(tag_name, text=None, attribute="text", id=None, default="Non renseigné(e)", next_sibling=False) :
+
+        # On récupère l'élément en fonction des paramètres text ou id (si définis)
         element = soup.find(tag_name, text=text, id=id) if text or id else soup.find(tag_name)
-        if element:
-            if attribute == "text":
-                return element.find_next_sibling("td").text.strip() if tag_name == "th" else element.text.strip()
-            else:
+
+        if element :
+            if next_sibling :
+                # Si le paramètre next_sibling est True, on cherche le prochain élément frère
+                next_element = element.find_next_sibling()
+                return next_element.text.strip() if next_element else default
+            
+            elif attribute == "text" :
+                # Si on récupère du texte, simplement extraire le texte de l'élément
+                return element.text.strip()
+            
+            else :
+                # Si on veut un autre attribut (comme "src" pour les images, etc.)
                 return element[attribute]
+        
         return default
 
     # Et hop on récupère les données
     product_page_url = page_url
-    upc = get_data_or_default("th", "UPC")
+    upc = get_data_or_default("th", "UPC", next_sibling=True)
     title = get_data_or_default("h1")
-    price_including_tax = get_data_or_default("th", "Price (incl. tax)")
-    price_excluding_tax = get_data_or_default("th", "Price (excl. tax)")
+    price_including_tax = get_data_or_default("th", "Price (incl. tax)", next_sibling=True)
+    price_excluding_tax = get_data_or_default("th", "Price (excl. tax)", next_sibling=True)
 
     # Stock avec extraction du nombre grâce à mon merveilleux ami Regex
-    stock_text = get_data_or_default("th", "Availability")
+    stock_text = get_data_or_default("th", "Availability", next_sibling=True)
     regex_match = re.search(r'\((\d+)', stock_text)
     number_available = regex_match.group(1) if regex_match else "Non renseigné(e)"
 
     # Description
-    product_description = get_data_or_default("div", id="product_description")
+    product_description = get_data_or_default("div", id="product_description", next_sibling=True)
 
     # Catégorie
     path_links = soup.find(class_="breadcrumb").find_all("a")
