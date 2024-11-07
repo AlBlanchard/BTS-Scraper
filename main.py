@@ -42,7 +42,10 @@ if argv_1 == "infos":
     else:
         print(f"L'argument '{sys.argv[2]}' n'est pas valide")
 
+
 if argv_1 == "category":
+    all_category_dictionnary = scrap_category()
+
     if argv_2 == "all":
         books_url_dictionnary = scrap_product_url(SITE)
         books_dictionnary = books_url_dictionnary_scraping(books_url_dictionnary)
