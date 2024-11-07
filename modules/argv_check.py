@@ -15,7 +15,7 @@ def validate_script_arguments(argv_list):
         bool: True si les arguments sont valides, sinon False.
     """
 
-    valid_arguments = {"category", "book", "infos"}
+    valid_arguments = {"category", "book", "infos", "search"}
 
     if len(argv_list) == 1:
         print(
@@ -34,13 +34,6 @@ def validate_script_arguments(argv_list):
     if argv_list[1] not in valid_arguments:
         print(
             f"L'argument '{argv_list[1]}' est invalide.\n"
-            "'python main.py infos' pour plus d'informations ou consultez la documentation."
-        )
-        return False
-
-    if argv_list[1] in {"category", "book"} and len(argv_list) == 2:
-        print(
-            f"L'argument '{argv_list[1]}' nécessite un argument supplémentaire.\n"
             "'python main.py infos' pour plus d'informations ou consultez la documentation."
         )
         return False

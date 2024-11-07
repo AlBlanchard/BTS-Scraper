@@ -20,9 +20,8 @@ if not validate_script_arguments(sys.argv):
 
 
 if len(sys.argv) == 2:
-    argv_1 = sys.argv[1].lower()
 
-    if argv_1 == "infos":
+    if sys.argv[1].lower() == "infos":
         print(
             "\n"
             "Voici comment exécuter les différentes fonctions du script :\n\n"
@@ -32,40 +31,47 @@ if len(sys.argv) == 2:
             "main.py book 'url_du_livre'              -> Scrape un livre via son URL\n"
             "main.py infos category                   -> Affiche toutes les catégories du site dans la console\n"
         )
-    elif len(sys.argv) == 3:
-        argv_2 = sys.argv[2].lower()
 
-        if argv_2 == "category":
-            all_category_dictionnary = scrap_category()
+elif len(sys.argv) == 3:
 
-            print("\nVoici toutes les catégories du site :\n")
-            for category in all_category_dictionnary:
-                print(category)
+    if sys.argv[1].lower() == "infos" and sys.argv[2].lower() == "category":
+        all_category_dictionnary = scrap_category()
+
+        print("\nVoici toutes les catégories du site :\n")
+        for category in all_category_dictionnary:
+            print(category)
+
+    elif sys.argv[1].lower() == "category":
+        all_category_dictionnary = scrap_category()
+
+        if sys.argv[2].lower() == "all":
+            books_url_dictionnary = scrap_product_url(SITE)
+            books_dictionnary = books_url_dictionnary_scraping(books_url_dictionnary)
+
+            save_it(books_dictionnary)
+
+        elif sys.argv[2] in all_category_dictionnary:
+            books_url_dictionnary = scrap_product_url(
+                all_category_dictionnary[sys.argv[2]]
+            )
+            books_dictionnary = books_url_dictionnary_scraping(books_url_dictionnary)
+
+            save_it(books_dictionnary)
 
         else:
-            print(f"L'argument '{sys.argv[2]}' n'est pas valide")
+            print(f"La catégorie {sys.argv[2]} n'existe pas.")
 
+    elif sys.argv[1].lower() == "book":
+        book_url = search_book_name_and_url(sys.argv[2].lower())  # Recherche via URL
+        book_data = scrap_book_data(book_url)
 
-if argv_1 == "category":
-    all_category_dictionnary = scrap_category()
+        save_it(book_data)
 
-    if argv_2 == "all":
-        books_url_dictionnary = scrap_product_url(SITE)
-        books_dictionnary = books_url_dictionnary_scraping(books_url_dictionnary)
+    elif sys.argv[1].lower() == "search":
+        book_url = search_book_name_and_url(sys.argv[2].lower())
+        book_data = scrap_book_data(book_url)
 
-        save_it(books_dictionnary)
-
-    elif argv_2 in all_category_dictionnary:
-        books_url_dictionnary = scrap_product_url(all_category_dictionnary[sys.argv[2]])
-        books_dictionnary = books_url_dictionnary_scraping(books_url_dictionnary)
-
-        save_it(books_dictionnary)
+        save_it(book_data)
 
     else:
-        print(f"L'argument '{sys.argv[2]}' n'est pas valide")
-
-if argv_1 == "book":
-    book_url = search_book_name_and_url(argv_2)
-    book_data = scrap_book_data(book_url)
-
-    save_it(book_data)
+        print(f"L'argument {sys.argv[2]} est invalide.")
