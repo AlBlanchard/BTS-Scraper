@@ -18,11 +18,11 @@ from modules.get_it import get_html
 if not validate_script_arguments(sys.argv):
     sys.exit()
 
-argv_1 = sys.argv[1].lower()
-argv_2 = sys.argv[2].lower()
 
-if argv_1 == "infos":
-    if len(sys.argv) == 2:
+if len(sys.argv) == 2:
+    argv_1 = sys.argv[1].lower()
+
+    if argv_1 == "infos":
         print(
             "\n"
             "Voici comment exécuter les différentes fonctions du script :\n\n"
@@ -32,15 +32,18 @@ if argv_1 == "infos":
             "main.py book 'url_du_livre'              -> Scrape un livre via son URL\n"
             "main.py infos category                   -> Affiche toutes les catégories du site dans la console\n"
         )
-    elif argv_2 == "category":
-        all_category_dictionnary = scrap_category()
+    elif len(sys.argv) == 3:
+        argv_2 = sys.argv[2].lower()
 
-        print("\nVoici toutes les catégories du site :\n")
-        for category in all_category_dictionnary:
-            print(category)
+        if argv_2 == "category":
+            all_category_dictionnary = scrap_category()
 
-    else:
-        print(f"L'argument '{sys.argv[2]}' n'est pas valide")
+            print("\nVoici toutes les catégories du site :\n")
+            for category in all_category_dictionnary:
+                print(category)
+
+        else:
+            print(f"L'argument '{sys.argv[2]}' n'est pas valide")
 
 
 if argv_1 == "category":

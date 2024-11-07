@@ -59,12 +59,8 @@ def download_image(book):
     category_folder = base_folder / book.category
     category_folder.mkdir(parents=True, exist_ok=True)
 
-    # Sous-dossier nommé par l'UPC du livre
-    book_folder = category_folder / book.upc
-    book_folder.mkdir(parents=True, exist_ok=True)
-
     # Télécharge et enregistre la couverture
-    image_path = book_folder / f"cover_{book.upc}.jpg"
+    image_path = category_folder / f"cover_{book.upc}.jpg"
 
     if not image_path.exists():
         response = requests.get(book.image_url)
