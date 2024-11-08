@@ -1,0 +1,5 @@
+Enlever les symboles prix
+
+Mettre search en argv pour recherche livre 
+
+Mettre le nom des livres dans le nom des fichiers image
