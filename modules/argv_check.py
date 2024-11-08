@@ -38,4 +38,11 @@ def validate_script_arguments(argv_list):
         )
         return False
 
+    if len(argv_list) == 2 and argv_list[1] == "category":
+        print(
+            "Erreur : L'argument 'category' nécessite un argument supplémentaire.\n"
+            "'python main.py infos' pour plus d'informations ou consultez la documentation."
+        )
+        return False
+
     return True

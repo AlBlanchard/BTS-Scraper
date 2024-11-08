@@ -1,15 +1,37 @@
-from modules.get_it import SITE
-from urllib.parse import urljoin
-from modules.get_it import get_html
-from modules.get_it import HOME_SOUP
+"""
+Ce module contient les fonctions qui permettent de scrapper les données du site Books to Scrape.
+
+"""
+
+import sys
 import re
+from urllib.parse import urljoin
+from modules.get_it import SITE
+from modules.get_it import HOME_SOUP
+from modules.get_it import get_html
 from modules.class_type import Book
 
 
 def scrap_category():
+    """
+    Permet de récupérer toutes les catégories du site, avec leur URL associée.
 
+    Les stocke dans un dictionnaire,
+    avec comme clé le nom de la catégorie et comme valeur l'URL de la catégorie.
+
+    """
     all_category_dictionnary = {}
-    all_category_anchor = HOME_SOUP.find(class_="nav-list").find("ul").find_all("a")
+
+    # Une fonction try/except pour gérer les erreurs de structure du site.
+    # Sinon, le script plantera si la structure du site a changé.
+    try:
+        all_category_anchor = HOME_SOUP.find(class_="nav-list").find("ul").find_all("a")
+
+    except AttributeError:
+        print(
+            "Erreur 'all_category_anchor' : Le site semble avoir changé de structure."
+        )
+        sys.exit()
 
     for category_anchor in all_category_anchor:
         all_category_dictionnary[category_anchor.text.strip()] = urljoin(
@@ -20,11 +42,25 @@ def scrap_category():
 
 
 def scrap_product_url(page_url):
-    soup = get_html(page_url)
-    products_dictionnary = {}
+    """
+    Permet de récupérer les URL des livres d'une page.
 
-    # Récupérer tous les produits et vérifier les pages suivantes en une seule recherche
-    all_products_h3 = soup.find_all("h3")
+    Les stocke dans un dictionnaire,
+    avec comme clé le titre du livre et comme valeur l'URL du livre.
+
+    """
+    soup = get_html(page_url)
+    books_dictionnary = {}
+
+    # Une fonction try/except pour gérer les erreurs de structure du site.
+    # Sinon, le script plantera si la structure du site a changé.
+    try:
+        all_books_h3 = soup.find_all("h3")
+    except AttributeError:
+        print("Erreur 'all_books_h3' : Le site semble avoir changé de structure.")
+        sys.exit()
+
+    # Pas besoin de try/except, il est possible que la page n'ait pas de page suivante.
     next_page_anchor = soup.find(class_="next")
 
     # En cas de plusieurs page, un compteur pour faire patienter l'utilisateur...
@@ -35,24 +71,38 @@ def scrap_product_url(page_url):
     else:
         print("Scan page 1 of 1...")
 
-    for product in all_products_h3:
-        product_anchor = product.find("a")
-        product_title = product_anchor["title"]
-        product_url = urljoin(page_url, product_anchor["href"])
-        products_dictionnary[product_title] = product_url  # Ajouter au dictionnaire
+    # Boucle pour récupérer les titres et URL des livres.
+    # Les stocke dans un dictionnaire. La clé est le titre du livre et la valeur est l'URL du livre.
+    # Encore try/except quand il s'agit de la structure du site pour éviter les plantages.
+    for book in all_books_h3:
+        try:
+            book_anchor = book.find("a")
+            book_title = book_anchor["title"]
+            book_url = urljoin(page_url, book_anchor["href"])
+            books_dictionnary[book_title] = book_url  # Ajouter au dictionnaire
+        except AttributeError:
+            print("Erreur 'book_anchor' : Le site semble avoir changé de structure.")
+            sys.exit()
 
-    # Vérifier s'il y a une autre page
+    # Vérifie s'il y a une autre page
     if next_page_anchor:
         next_page_uri = next_page_anchor.find("a")["href"]
         next_page_url = urljoin(page_url, next_page_uri)
 
         # Appel récursif pour scrapper la page suivante
-        products_dictionnary.update(scrap_product_url(next_page_url))
+        books_dictionnary.update(scrap_product_url(next_page_url))
 
-    return products_dictionnary
+    return books_dictionnary
 
 
 def search_book_name_and_url(book_name, url=SITE):
+    """
+
+    Permet de rechercher un livre via une partie de son titre.
+
+    Retourne l'URL du livre si trouvé.
+
+    """
     while url:
         soup = get_html(url)
 
@@ -68,9 +118,8 @@ def search_book_name_and_url(book_name, url=SITE):
         for h3 in soup.find_all("h3"):
             title = h3.find("a")["title"]
 
-            if (
-                book_name.lower() in title.lower()
-            ):  # Pour que la comparaison soit insensible à la casse
+            # Pour que la comparaison soit insensible à la casse
+            if book_name.lower() in title.lower():
                 print(f"Trouvé : {title}")
                 book_url = urljoin(url, h3.find("a")["href"])
 
@@ -82,13 +131,20 @@ def search_book_name_and_url(book_name, url=SITE):
             next_page_anchor = soup.find(class_="next").find("a")
             next_page_url = urljoin(url, next_page_anchor["href"])
             url = next_page_url
-
         else:
-            print("Pas trouvé, assurez vous que le titre soit correct.")
-            exit()
+            break
+
+    print("Aucune correspondance trouvée, assurez vous que le titre soit correct.")
+    sys.exit()
 
 
 def scrap_book_data(page_url):
+    """
+    Permet de récupérer les données d'un livre.
+
+    Retourne un dictionnaire avec l'UPC du livre comme clé et les données du livre comme valeur.
+
+    """
     soup = get_html(page_url)
 
     # Cette fonction permet de simplifier l'extraction de données et de rendre stable le script : il ne plantera pas si une donnée n'existe pas ou si la structure du site n'a pas été respecté, il renverra une valeur par défault.
