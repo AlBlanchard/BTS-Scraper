@@ -5,6 +5,7 @@ Ici une fonction get_html() est définie pour récupérer le contenu HTML d'une 
 Il y a aussi deux constante SITE et HOME_SOUP qui sont définies pour stocker l'URL 
 du site et le contenu HTML de la page d'accueil du site.
 
+
 """
 
 import sys
@@ -51,7 +52,7 @@ HOME_SOUP = get_html(SITE)
 
 def find_element(soup, tag, text=None, attributes=None, sibling=False):
     """
-    Trouve et retourne un élément HTML en fonction des critères spécifiés : balise, texte, id, ou classe.
+    Retourne un élément HTML en fonction des critères spécifiés : balise, texte, id, ou classe.
     Si sibling=True, retourne l'élément frère suivant.
 
     Arguments:
