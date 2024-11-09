@@ -13,6 +13,7 @@ from modules.class_type import Book
 from modules.data_cleaner import clean_price
 from modules.data_cleaner import clean_stock
 from modules.data_cleaner import clean_rating
+from modules.data_cleaner import clean_title
 from modules.get_it import find_book_data_element
 
 
@@ -45,29 +46,25 @@ def scrap_category():
     return all_category_dictionnary
 
 
-def scrap_product_url(page_url):
+def scrap_product_url(page_url, global_books_dictionnary=None):
     """
-    Permet de récupérer les URL des livres d'une page.
-
-    Les stocke dans un dictionnaire,
-    avec comme clé le titre du livre et comme valeur l'URL du livre.
+    Permet de récupérer les URL des livres d'une page et de les fusionner avec un dictionnaire global.
+    Vérifie les doublons avant la fusion.
     """
+    if global_books_dictionnary is None:
+        global_books_dictionnary = {}
 
     soup = get_html(page_url)
-    books_dictionnary = {}
+    new_books_dictionnary = {}
 
-    # Une fonction try/except pour gérer les erreurs de structure du site.
-    # Sinon, le script plantera si la structure du site a changé.
     try:
         all_books_h3 = soup.find_all("h3")
     except AttributeError:
         print("Erreur 'all_books_h3' : Le site semble avoir changé de structure.")
         sys.exit()
 
-    # Pas besoin de try/except, il est possible que la page n'ait pas de page suivante.
     next_page_anchor = soup.find(class_="next")
 
-    # En cas de plusieurs page, un compteur pour faire patienter l'utilisateur...
     there_is_a_pager = bool(soup.find(class_="current"))
     if there_is_a_pager:
         page_number = soup.find(class_="current").text.strip().lower()
@@ -75,28 +72,44 @@ def scrap_product_url(page_url):
     else:
         print("Scan page 1 of 1...")
 
-    # Boucle pour récupérer les titres et URL des livres.
-    # Les stocke dans un dictionnaire. La clé est le titre du livre et la valeur est l'URL du livre.
-    # Encore try/except quand il s'agit de la structure du site pour éviter les plantages.
+    # Collecter les livres et vérifier les doublons avant de les ajouter
     for book in all_books_h3:
         try:
             book_anchor = book.find("a")
             book_title = book_anchor["title"]
             book_url = urljoin(page_url, book_anchor["href"])
-            books_dictionnary[book_title] = book_url  # Ajouter au dictionnaire
+
+            # Vérifier si le titre est déjà présent dans le dictionnaire en cours ou global
+            if book_title in new_books_dictionnary:
+                print(f"Titre en doublon détecté : {book_title} - {book_url}")
+                book_title = f"{book_title}_double"
+                new_books_dictionnary[book_title] = book_url
+            elif book_title in global_books_dictionnary:
+                print(f"Titre en doublon détecté : {book_title} - {book_url}")
+                book_title = f"{book_title}_double"
+                new_books_dictionnary[book_title] = book_url
+            else:
+                # Si pas de doublon, on l'ajoute au nouveau dictionnaire temporaire
+                new_books_dictionnary[book_title] = book_url
+
         except AttributeError:
             print("Erreur 'book_anchor' : Le site semble avoir changé de structure.")
             sys.exit()
 
-    # Vérifie s'il y a une autre page
+    # Fusionner les dictionnaires sans doublon
+    global_books_dictionnary.update(new_books_dictionnary)
+
+    print(f"Trouvé {len(global_books_dictionnary)} livres.")
+
+    # Gérer la pagination si nécessaire
     if next_page_anchor:
         next_page_uri = next_page_anchor.find("a")["href"]
         next_page_url = urljoin(page_url, next_page_uri)
+        global_books_dictionnary.update(
+            scrap_product_url(next_page_url, global_books_dictionnary)
+        )
 
-        # Appel récursif pour scrapper la page suivante
-        books_dictionnary.update(scrap_product_url(next_page_url))
-
-    return books_dictionnary
+    return global_books_dictionnary
 
 
 def search_book_name_and_url(book_name, url=SITE):
