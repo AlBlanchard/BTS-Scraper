@@ -4,12 +4,16 @@ Ce module contient les fonctions qui permettent de scrapper les données du site
 """
 
 import sys
-import re
 from urllib.parse import urljoin
 from modules.get_it import SITE
 from modules.get_it import HOME_SOUP
 from modules.get_it import get_html
+from modules.get_it import get_data_of_element
 from modules.class_type import Book
+from modules.data_cleaner import clean_price
+from modules.data_cleaner import clean_stock
+from modules.data_cleaner import clean_rating
+from modules.get_it import find_book_data_element
 
 
 def scrap_category():
@@ -18,8 +22,8 @@ def scrap_category():
 
     Les stocke dans un dictionnaire,
     avec comme clé le nom de la catégorie et comme valeur l'URL de la catégorie.
-
     """
+
     all_category_dictionnary = {}
 
     # Une fonction try/except pour gérer les erreurs de structure du site.
@@ -47,8 +51,8 @@ def scrap_product_url(page_url):
 
     Les stocke dans un dictionnaire,
     avec comme clé le titre du livre et comme valeur l'URL du livre.
-
     """
+
     soup = get_html(page_url)
     books_dictionnary = {}
 
@@ -97,12 +101,10 @@ def scrap_product_url(page_url):
 
 def search_book_name_and_url(book_name, url=SITE):
     """
-
     Permet de rechercher un livre via une partie de son titre.
-
     Retourne l'URL du livre si trouvé.
-
     """
+
     while url:
         soup = get_html(url)
 
@@ -140,87 +142,54 @@ def search_book_name_and_url(book_name, url=SITE):
 
 def scrap_book_data(page_url):
     """
-    Permet de récupérer les données d'un livre.
-
-    Retourne un dictionnaire avec l'UPC du livre comme clé et les données du livre comme valeur.
-
+    Extrait les données d'un livre depuis la page donnée et retourne un dictionnaire.
     """
-    soup = get_html(page_url)
 
-    # Cette fonction permet de simplifier l'extraction de données et de rendre stable le script
-    # Il ne plantera pas si une donnée n'existe pas ou si la structure du site n'a pas été respecté, il renverra une valeur par défault.
-    def get_data_or_default(
-        tag_name,
-        text=None,
-        attribute="text",
-        element_id=None,
-        default="Non renseigné(e)",
-        next_sibling=False,
-    ):
+    # Récupération des éléments HTML relatifs aux données du livre
+    book_elements = find_book_data_element(page_url)
 
-        # On récupère l'élément en fonction des paramètres text ou element_id (si définis)
-        element = (
-            soup.find(tag_name, text=text, element_id=element_id)
-            if text or element_id
-            else soup.find(tag_name)
-        )
+    # Extraction des données en utilisant find_element et get_data_of_element
+    upc = get_data_of_element(book_elements["upc_element"])
+    title = get_data_of_element(book_elements["title_element"])
 
-        if element:
-            if next_sibling:
-                # Si le paramètre next_sibling est True, on cherche le prochain élément frère
-                next_element = element.find_next_sibling()
-                return next_element.text.strip() if next_element else default
-
-            elif attribute == "text":
-                # Si on récupère du texte, simplement extraire le texte de l'élément
-                return element.text.strip()
-
-            else:
-                # Si on veut un autre attribut (comme "src" pour les images, etc.)
-                return element[attribute]
-
-        return default
-
-    # Et hop on récupère les données
-    product_page_url = page_url
-    upc = get_data_or_default("th", "UPC", next_sibling=True)
-    title = get_data_or_default("h1")
-    price_including_tax = get_data_or_default(
-        "th", "Price (incl. tax)", next_sibling=True
+    # Enlève le symbole £ des prix (clean_price)
+    price_incl_tax = clean_price(
+        get_data_of_element(book_elements["price_incl_tax_element"])
     )
-    price_excluding_tax = get_data_or_default(
-        "th", "Price (excl. tax)", next_sibling=True
+    price_excl_tax = clean_price(
+        get_data_of_element(book_elements["price_excl_tax_element"])
     )
 
-    # Stock avec extraction du nombre grâce à mon merveilleux ami Regex
-    stock_text = get_data_or_default("th", "Availability", next_sibling=True)
-    regex_match = re.search(r"\((\d+)", stock_text)
-    number_available = regex_match.group(1) if regex_match else "Non renseigné(e)"
+    # Nettoie la disponibilité du stock (clean_stock)
+    number_available = clean_stock(
+        get_data_of_element(book_elements["number_available_element"])
+    )
 
-    # Description
-    product_description = get_data_or_default(
-        "div", element_id="product_description", next_sibling=True
+    # Description du produit
+    product_description = get_data_of_element(
+        book_elements["product_description_element"]
     )
 
     # Catégorie
-    path_links = soup.find(class_="breadcrumb").find_all("a")
-    category = path_links[2].text.strip() if len(path_links) > 2 else "Non renseigné(e)"
+    category = get_data_of_element(book_elements["category_element"])
 
-    # Rating avec conversion en chiffre
-    review_rating_in_letter = soup.find("p", class_="star-rating")["class"][1]
-    rating_map = {"One": 1, "Two": 2, "Three": 3, "Four": 4, "Five": 5}
-    review_rating = rating_map.get(review_rating_in_letter, "Non renseigné(e)")
+    # Évaluation en étoiles (conversion du texte en notation numérique)
+    rating_text = get_data_of_element(book_elements["rating_element"], attr="class")
+    rating_text = rating_text[1] if rating_text != "Non renseigné(e)" else rating_text
+    review_rating = clean_rating(rating_text)
 
     # URL de l'image
-    image_url = urljoin(page_url, get_data_or_default("img", attribute="src"))
+    image_url = urljoin(
+        page_url, get_data_of_element(book_elements["image_element"], attr="src")
+    )
 
-    # Maintenant que toutes les données ont été récoltés, les mettre en place dans l'objet
+    # Création de l'objet de données du livre
     book_data = Book(
-        product_page_url=product_page_url,
+        product_page_url=page_url,
         upc=upc,
         title=title,
-        price_including_tax=price_including_tax,
-        price_excluding_tax=price_excluding_tax,
+        price_including_tax=price_incl_tax,
+        price_excluding_tax=price_excl_tax,
         number_available=number_available,
         product_description=product_description,
         category=category,
@@ -232,6 +201,11 @@ def scrap_book_data(page_url):
 
 
 def books_url_dictionnary_scraping(books_url_dictionnary):
+    """
+    Scrap les données de tous les livres d'un dictionnaire d'URL.
+    Retourne un dictionnaire de données de livres.
+    """
+
     books_dictionnary = {}
 
     book_numb = 1

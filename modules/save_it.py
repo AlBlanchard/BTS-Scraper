@@ -1,16 +1,19 @@
 """
 
-Faire une explication
+Ce module contient les fonctions qui permettent de sauvegarder les données scrapées.
+Sauvegarde du csv et des images, création des dossiers.
 
 """
 
 import csv
 from pathlib import Path
-import requests
 import shutil
+import requests
+from modules.data_cleaner import clean_title
 
 
 def save_books_to_csv(books_dictionary, filename="datas_scraped/books_data.csv"):
+    """Sauvegarde les données scrapées dans un fichier CSV."""
 
     fieldnames = [
         "Lien vers le livre",
@@ -52,6 +55,7 @@ def save_books_to_csv(books_dictionary, filename="datas_scraped/books_data.csv")
 
 
 def download_image(book):
+    """Télécharge l'image du livre et l'enregistre dans le dossier correspondant."""
 
     base_folder = Path("datas_scraped") / "images_books"
 
@@ -59,20 +63,25 @@ def download_image(book):
     category_folder = base_folder / book.category
     category_folder.mkdir(parents=True, exist_ok=True)
 
+    # Nettoie le titre du livre
+    cleaned_title = clean_title(book.title)
+
     # Télécharge et enregistre la couverture
-    image_path = category_folder / f"cover_{book.upc}.jpg"
+    image_path = category_folder / f"cover_{book.upc}_{cleaned_title}.jpg"
 
     if not image_path.exists():
-        response = requests.get(book.image_url)
+        response = requests.get(book.image_url, timeout=10)
 
         with open(image_path, "wb") as image_file:
             image_file.write(response.content)
 
-    # Ajoute le chemin relatif comme donnée, cela fonctionne même si le champs n'existe pas dans la class. Mais la convention PEP recommande de garder un champs "None".
+    # Ajoute le chemin relatif comme donnée, cela fonctionne même si le champ n'existe pas dans la classe.
+    # Mais la convention PEP recommande de garder un champ "None".
     book.image_path = str(image_path)
 
 
 def clear_previous_data(folder_path="datas_scraped"):
+    """Efface les données précédentes pour éviter les doublons."""
 
     if Path(folder_path).exists():
         shutil.rmtree(folder_path)
@@ -81,6 +90,7 @@ def clear_previous_data(folder_path="datas_scraped"):
 
 
 def save_it(books_dictionnary):
+    """Lance les fonctions de sauvegarde des données."""
 
     clear_previous_data()
     book_number = 1
