@@ -39,7 +39,7 @@ def extract_category():
         sys.exit()
 
     for category_anchor in all_category_anchor:
-        all_category_dictionnary[category_anchor.text.strip()] = urljoin(
+        all_category_dictionnary[category_anchor.text.strip().lower()] = urljoin(
             SITE, category_anchor["href"]
         )
 

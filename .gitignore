@@ -1,5 +1,7 @@
 /env
+/etl/__pycache__
 /modules/__pycache__
+
 
 /datas_scraped
 
