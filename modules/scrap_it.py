@@ -94,15 +94,13 @@ def book_url_collector(page_url, global_books_url_list=None):
             sys.exit()
 
     # Fusionner les listes
-    global_books_url_list = global_books_url_list + new_books_url_list
+    global_books_url_list.extend(new_books_url_list)
 
     # Gérer la pagination si nécessaire
     if next_page_anchor:
         next_page_uri = next_page_anchor.find("a")["href"]
         next_page_url = urljoin(page_url, next_page_uri)
-        global_books_url_list.update(
-            book_url_collector(next_page_url, global_books_url_list)
-        )
+        book_url_collector(next_page_url, global_books_url_list)
 
     return global_books_url_list
 

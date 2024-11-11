@@ -1,5 +1,4 @@
 """
-
 Le main comprend uniquement deux grandes conditions :
 
 -> La première vérifie si les arguments constants entrés sont valides. 

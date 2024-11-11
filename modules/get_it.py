@@ -1,11 +1,8 @@
 """
-
 Ici une fonction get_html() est définie pour récupérer le contenu HTML d'une page web. 
 
 Il y a aussi deux constante SITE et HOME_SOUP qui sont définies pour stocker l'URL 
 du site et le contenu HTML de la page d'accueil du site.
-
-
 """
 
 import sys
