@@ -1,5 +1,28 @@
+"""
+La classe Book est un objet de données qui stocke les informations d'un livre.
+"""
+
+
 class Book:
-    def __init__(self, product_page_url, upc, title, price_including_tax, price_excluding_tax, number_available, product_description, category, review_rating, image_url, image_path=None):
+    """
+    Stocke les informations d'un livre.
+    """
+
+    # Code de la classe Bookclass Book:
+    def __init__(
+        self,
+        product_page_url,
+        upc,
+        title,
+        price_including_tax,
+        price_excluding_tax,
+        number_available,
+        product_description,
+        category,
+        review_rating,
+        image_url,
+        image_path=None,
+    ):
         self.product_page_url = product_page_url
         self.upc = upc
         self.title = title
@@ -13,4 +36,4 @@ class Book:
         self.image_path = image_path
 
     def __str__(self):
-        return f"Book(title={self.title}, price tax={self.price_including_tax}, price no tax={self.price_excluding_tax}, available={self.number_available}, upc={self.upc}, category={self.category}, rating={self.review_rating}, img url={self.image_url})"
+        return f"Book(title={self.title}, url={self.product_page_url}, upc={self.upc})"

@@ -87,17 +87,3 @@ def clear_previous_data(folder_path="datas_scraped"):
         shutil.rmtree(folder_path)
 
     Path(folder_path).mkdir(parents=True, exist_ok=True)
-
-
-def save_it(books_dictionnary):
-    """Lance les fonctions de sauvegarde des données."""
-
-    clear_previous_data()
-    book_number = 1
-
-    for book in books_dictionnary.values():
-        print(f"Download image {book_number} of {len(books_dictionnary)}")
-        download_image(book)
-        book_number += 1
-
-    save_books_to_csv(books_dictionnary)

@@ -147,3 +147,16 @@ def find_book_data_element(book_url):
         "rating_element": rating_element,
         "image_element": image_element,
     }
+
+
+def pagination_counter(soup):
+    """
+    Affiche dans la console le numéro de la page en cours de scan.
+    """
+
+    there_is_a_pager = bool(soup.find(class_="current"))
+    if there_is_a_pager:
+        page_number = soup.find(class_="current").text.strip().lower()
+        print(f"Scan {page_number}...")
+    else:
+        print("Scan page 1 of 1...")
