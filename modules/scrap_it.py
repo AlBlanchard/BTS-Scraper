@@ -13,7 +13,6 @@ from modules.class_type import Book
 from modules.data_cleaner import clean_price
 from modules.data_cleaner import clean_stock
 from modules.data_cleaner import clean_rating
-from modules.data_cleaner import clean_title
 from modules.get_it import find_book_data_element
 
 
