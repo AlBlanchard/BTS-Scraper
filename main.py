@@ -11,10 +11,10 @@ puis lance le script en fonction des arguments.
 
 import sys
 import requests
-from modules.scrap_it import scrap_product_url
+from modules.scrap_it import book_url_collector
 from modules.get_it import SITE
 from modules.argv_check import validate_script_arguments
-from modules.scrap_it import books_url_dictionnary_scraping
+from modules.scrap_it import organise_books_data_into_dict
 from modules.scrap_it import scrap_book_data
 from modules.scrap_it import scrap_category
 from modules.scrap_it import search_book_name_and_url
@@ -63,17 +63,17 @@ elif len(sys.argv) == 3:
         # Petit trick pour gagner du temps, récupère les données via le home index.
         # Pas de besoin de scraper categorie par categorie.
         if sys.argv[2].lower() == "all":
-            books_url_dictionnary = scrap_product_url(SITE)
-            books_dictionnary = books_url_dictionnary_scraping(books_url_dictionnary)
+            books_url_list = book_url_collector(SITE)
+            books_dictionnary = organise_books_data_into_dict(books_url_list)
 
             save_it(books_dictionnary)
 
         # Vérifie si la categorie existe, puis scrap les livres de cette catégorie.
         elif sys.argv[2] in all_category_dictionnary:
-            books_url_dictionnary = scrap_product_url(
+            books_url_dictionnary = book_url_collector(
                 all_category_dictionnary[sys.argv[2]]
             )
-            books_dictionnary = books_url_dictionnary_scraping(books_url_dictionnary)
+            books_dictionnary = organise_books_data_into_dict(books_url_dictionnary)
 
             save_it(books_dictionnary)
 
