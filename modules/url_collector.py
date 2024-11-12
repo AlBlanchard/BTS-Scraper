@@ -37,18 +37,6 @@ def h3_collector(soup):
     return all_books_h3
 
 
-def next_page_collector(soup, page_url, global_books_url_list):
-    """
-    Récupère l'URL de la page suivante.
-    """
-
-    next_page_anchor = soup.find(class_="next")
-    if next_page_anchor:
-        next_page_uri = next_page_anchor.find("a")["href"]
-        next_page_url = urljoin(page_url, next_page_uri)
-        book_url_collector(next_page_url, global_books_url_list)
-
-
 def book_url_collector(page_url, global_books_url_list=None):
     """
     Permet de récupérer les URL des livres d'une page et de les regrouper dans une liste.
@@ -84,6 +72,13 @@ def book_url_collector(page_url, global_books_url_list=None):
     global_books_url_list.extend(new_books_url_list)
 
     # Gérer la pagination si nécessaire
-    next_page_collector(soup, page_url, global_books_url_list)
+    try:
+        next_page_anchor = soup.find(class_="next")
+        next_page_uri = next_page_anchor.find("a")["href"]
+        next_page_url = urljoin(page_url, next_page_uri)
+        book_url_collector(next_page_url, global_books_url_list)
+
+    except AttributeError:
+        return global_books_url_list
 
     return global_books_url_list

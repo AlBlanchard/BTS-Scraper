@@ -113,6 +113,8 @@ def search_book_name_and_extract_url(book_name, url=SITE):
     Permet de rechercher un livre via une partie de son titre.
     Retourne l'URL du livre si trouvé.
     """
+    # Divise book_name en mots individuels pour la recherche
+    book_name_words = book_name.lower().split()
 
     while url:
         soup = get_html(url)
@@ -123,17 +125,20 @@ def search_book_name_and_extract_url(book_name, url=SITE):
         for h3 in soup.find_all("h3"):
             title = h3.find("a")["title"]
 
-            # Pour que la comparaison soit insensible à la casse et recherche de mot entier
-            if re.search(rf"\b{re.escape(book_name.lower())}\b", title.lower()):
+            # Vérifie si tous les mots de book_name sont présents dans le titre
+            if all(
+                re.search(rf"\b{re.escape(word)}\b", title.lower())
+                for word in book_name_words
+            ):
                 print(f"Trouvé : {title}")
                 book_url = urljoin(url, h3.find("a")["href"])
                 return book_url
 
-        next_page_anchor = soup.find(class_="next").find("a")
-        if next_page_anchor:
+        try:
+            next_page_anchor = soup.find(class_="next").find("a")
             next_page_url = urljoin(url, next_page_anchor["href"])
             url = next_page_url
-        else:
+        except AttributeError:
             break
 
     print("Aucune correspondance trouvée, assurez vous que le titre soit correct.")
