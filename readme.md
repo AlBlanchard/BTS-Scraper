@@ -42,13 +42,7 @@
         python3 -m venv env
         ```
 
-4. **Installez les dépendances :**
-
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-5. **Activez l'environnement virtuel :**
+4. **Activez l'environnement virtuel :**
 
     - **Windows :**
 
@@ -61,6 +55,12 @@
         ```bash
         source env/bin/activate
         ```
+
+5. **Installez les dépendances :**
+
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 ## Utilisation
 
@@ -126,18 +126,19 @@
 
 #### Sauvegarde des données
 
-- Dans le cas où une seule catégorie est scrapée :
+- **Dans le cas où une seule catégorie est scrapée** :
   
-Les données sont enregistrées dans un fichier `.csv` situé dans le dossier `datas_scraped/'nom_de_la_catégorie'`
+    Les données sont enregistrées dans un fichier `.csv` situé dans le dossier `datas_scraped/'nom_de_la_catégorie'`
 
-- Dans le cas où TOUTES les catégories sont scrapées :
+- **Dans le cas où TOUTES les catégories sont scrapées** :
 
-Les données sont enregistrées dans un fichier `.csv` situé dans le dossier `datas_scraped/'nom_de_la_catégorie'`
-ET un fichier `.csv` de toutes les données est enregistré dans le dossier `datas_scraped`.
+    Les données sont enregistrées dans un fichier `.csv` situé dans le dossier `datas_scraped/'nom_de_la_catégorie'`
+    ET un fichier `.csv` de toutes les données est enregistré dans le dossier `datas_scraped`.
 
-- Les images des couvertures des livres sont enregistrées dans :  
-  `datas_scraped/'catégorie_du_livre'/images_books/`.  
-  Chaque couverture est placée dans le dossier correspondant à sa catégorie.
+- **Les images des couvertures des livres sont enregistrées dans** :  
+
+    `datas_scraped/'catégorie_du_livre'/images_books/`.  
+    Chaque couverture est placée dans le dossier correspondant à sa catégorie.
 
 ⚠️ **Attention** : Lancer un nouveau scraping effacera les fichiers existants dans `datas_scraped` !
 
@@ -149,7 +150,7 @@ ET un fichier `.csv` de toutes les données est enregistré dans le dossier `dat
 python main.py category 'Historical Fiction'
 ```
 
-Scrap tous les livre de la catégorie 'Historical Fiction'
+> Scrap tous les livre de la catégorie 'Historical Fiction'
 
 - Recherche et scrap d'un livre
 
@@ -157,9 +158,9 @@ Scrap tous les livre de la catégorie 'Historical Fiction'
 python main.py search "Harry Potter"
 ```
 
-Scrap les données du premier livre Harry Potter trouvé, d'où l'importance d'être précis.
-Si vous recherchez la chambre des secrets "Harry Potter chamber of secrets" fonctionnera.
-Fonctionne également dans le désordre "chamber of secrets Harry Potter".
+> Scrap les données du premier livre Harry Potter trouvé, d'où l'importance d'être précis.
+> Si vous recherchez la chambre des secrets "Harry Potter chamber of secrets" fonctionnera.
+> Fonctionne également dans le désordre "chamber of secrets Harry Potter".
 
 - Scrap d'un livre par son url
 
@@ -167,6 +168,6 @@ Fonctionne également dans le désordre "chamber of secrets Harry Potter".
 python main.py book <https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html>
 ```
 
-Scrap les données du livre "A Light in the Attic"
+> Scrap les données du livre "A Light in the Attic"
 
 **IMPORTANT** : Les entrées sont insensibles à la casse, pas besoin de se soucier des majuscules.

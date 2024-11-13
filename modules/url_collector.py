@@ -1,5 +1,10 @@
 """
-Ce module contient les fonctions qui permettent de scrapper les données du site Books to Scrape.
+Ce module permet de récupérer les URL des livres d'une page et de les regrouper dans une liste.
+
+Fonctions:
+    - doublon_checker(book_url, new_books_url_list, global_books_url_list)
+    - h3_collector(soup)
+    - book_url_collector(page_url, global_books_url_list=None)
 
 """
 
@@ -40,9 +45,12 @@ def h3_collector(soup):
 def book_url_collector(page_url, global_books_url_list=None):
     """
     Permet de récupérer les URL des livres d'une page et de les regrouper dans une liste.
+
     Gère la pagination grace à deux listes : global_books_url_list et new_books_url_list.
     new_books_url_list est une liste temporaire qui est fusionnée avec global_books_url_list.
+
     Vérifie aussi les doublons avant la fusion.
+
     Retourne global_books_url_list, la liste totale des URL des livres.
     """
 
@@ -68,7 +76,7 @@ def book_url_collector(page_url, global_books_url_list=None):
             )
             sys.exit()
 
-    # Fusionner les listes
+    # Fusionner les listes, il n'en restera qu'une !
     global_books_url_list.extend(new_books_url_list)
 
     # Gérer la pagination si nécessaire

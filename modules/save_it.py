@@ -120,6 +120,7 @@ def download_image(book):
 
     # Dossier catégorie
     category_folder = base_folder / book.category
+    category_folder.mkdir(parents=True, exist_ok=True)
     images_folder = category_folder / "images_books"
     images_folder.mkdir(parents=True, exist_ok=True)
 

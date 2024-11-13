@@ -1,8 +1,13 @@
 """
-Ici une fonction get_html() est définie pour récupérer le contenu HTML d'une page web. 
+Ce module contient les fonctions nécessaires pour récupérer les éléments des livres sur le site books.toscrape.com.
 
-Il y a aussi deux constante SITE et HOME_SOUP qui sont définies pour stocker l'URL 
-du site et le contenu HTML de la page d'accueil du site.
+Fonctions:
+    - get_html(url, dont_stop=False)
+    - find_element(soup, tag, text=None, attributes=None, sibling=False)
+    - get_data_of_element(element, attr="text", default="Non renseigné(e)", sibling=False)
+    - find_book_data_element(book_url)
+    - pagination_counter(soup)
+
 """
 
 import sys

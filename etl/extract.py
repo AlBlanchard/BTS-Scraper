@@ -1,5 +1,8 @@
 """
 Module d'extraction des données du site Books to Scrape.
+
+Ce module contient des fonctions pour extraire les catégories, les données des livres
+et pour rechercher un livre via une partie de son titre.
 """
 
 import sys

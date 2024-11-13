@@ -25,8 +25,18 @@ def clean_rating(rating_text):
 def clean_title(title):
     """
     Nettoie le titre du livre pour l'utiliser dans le nom de fichier.
-    Remplace les caractères spéciaux par des underscores.
+    Remplace les caractères spéciaux par des underscores et limite à 8 segments.
     """
-    # Remplace les caractères non alphanumériques par des underscores
+    # Remplace les caractères non alphanumériques par des underscores et met tout en minuscules
     cleaned_title = re.sub(r"\W+", "_", title).lower()
-    return cleaned_title
+
+    # Découpe le titre en segments basés sur les underscores
+    segments = cleaned_title.split("_")
+
+    # Limite à 8 segments
+    truncated_segments = segments[:8]
+
+    # Rejoint les segments tronqués avec des underscores
+    final_title = "_".join(truncated_segments)
+
+    return final_title

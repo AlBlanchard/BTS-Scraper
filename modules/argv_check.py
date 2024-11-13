@@ -1,6 +1,11 @@
 """
+Ce module contient la fonction nécessaire pour vérifier les arguments passés au script.
+Contient également deux fonctions d'aide pour afficher des informations sur l'utilisation du script.
 
-Module comportant deux fonctions de validation des arguments.
+Fonctions:
+    - validate_script_arguments(argv_list)
+    - print_help()
+    - print_help_category()
 
 """
 
