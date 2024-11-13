@@ -20,7 +20,7 @@ def scrap_category(argv_2):
     if argv_2.lower() == "all":
         books_url_list = book_url_collector(SITE)
         books_dictionary = organise_books_data_into_dict(books_url_list)
-        load_book_data(books_dictionary)
+        load_book_data(books_dictionary, global_data=True)
 
     elif argv_2.lower() in all_category_dictionary:
         books_url_dictionnary = book_url_collector(

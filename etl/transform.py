@@ -22,3 +22,20 @@ def organise_books_data_into_dict(books_url_list):
         book_numb += 1
 
     return books_dictionnary
+
+
+def organise_books_data_by_category(books_dictionary):
+    """
+    Organise les données de livres par catégorie.
+    Retourne un dictionnaire de données de livres organisé par catégorie.
+    """
+
+    books_by_category = {}
+
+    for book in books_dictionary.values():
+        category = book.category
+        if category not in books_by_category:
+            books_by_category[category] = []
+        books_by_category[category].append(book)
+
+    return books_by_category

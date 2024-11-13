@@ -28,5 +28,5 @@ def clean_title(title):
     Remplace les caractères spéciaux par des underscores.
     """
     # Remplace les caractères non alphanumériques par des underscores
-    cleaned_title = re.sub(r"\W+", "_", title)
+    cleaned_title = re.sub(r"\W+", "_", title).lower()
     return cleaned_title

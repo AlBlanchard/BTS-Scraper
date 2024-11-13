@@ -126,20 +126,32 @@
 
 #### Sauvegarde des données
 
-- Les données sont enregistrées dans un fichier `.csv` situé dans le dossier `datas_scraped`.
+- Dans le cas où une seule catégorie est scrapée :
+  
+Les données sont enregistrées dans un fichier `.csv` situé dans le dossier `datas_scraped/'nom_de_la_catégorie'`
+
+- Dans le cas où TOUTES les catégories sont scrapées :
+
+Les données sont enregistrées dans un fichier `.csv` situé dans le dossier `datas_scraped/'nom_de_la_catégorie'`
+ET un fichier `.csv` de toutes les données est enregistré dans le dossier `datas_scraped`.
+
 - Les images des couvertures des livres sont enregistrées dans :  
-  `datas_scraped/images_books/'catégorie_du_livre'/`.  
+  `datas_scraped/'catégorie_du_livre'/images_books/`.  
   Chaque couverture est placée dans le dossier correspondant à sa catégorie.
 
 ⚠️ **Attention** : Lancer un nouveau scraping effacera les fichiers existants dans `datas_scraped` !
 
 ## Exemples d'utilisation
 
+- Scrap d'une catégorie
+
 ```bash
 python main.py category 'Historical Fiction'
 ```
 
 Scrap tous les livre de la catégorie 'Historical Fiction'
+
+- Recherche et scrap d'un livre
 
 ```bash
 python main.py search "Harry Potter"
@@ -148,6 +160,8 @@ python main.py search "Harry Potter"
 Scrap les données du premier livre Harry Potter trouvé, d'où l'importance d'être précis.
 Si vous recherchez la chambre des secrets "Harry Potter chamber of secrets" fonctionnera.
 Fonctionne également dans le désordre "chamber of secrets Harry Potter".
+
+- Scrap d'un livre par son url
 
 ```bash
 python main.py book <https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html>
