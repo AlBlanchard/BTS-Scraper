@@ -165,7 +165,7 @@ python main.py search "Harry Potter"
 - Scrap d'un livre par son url
 
 ```bash
-python main.py book <https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html>
+python main.py book https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html
 ```
 
 > Scrap les données du livre "A Light in the Attic"
